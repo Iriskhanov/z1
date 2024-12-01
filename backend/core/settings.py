@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
 
     'UserService',
+    'property',
 ]
 
 REST_FRAMEWORK = {
@@ -134,6 +135,8 @@ DATABASES = {
     }
 }
 
+MEDIA_URL = '/media/'  # URL для доступа к файлам
+MEDIA_ROOT = BASE_DIR / 'media'  # Локальная директория для хранения файлов
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
