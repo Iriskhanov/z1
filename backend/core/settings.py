@@ -41,7 +41,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
 
-    'UserService',
+    'users',
     'property',
 ]
 
@@ -52,7 +52,7 @@ REST_FRAMEWORK = {
     
 }
 
-AUTH_USER_MODEL = 'UserService.CustomUser'
+AUTH_USER_MODEL = 'users.CustomUser'
 
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=5),
