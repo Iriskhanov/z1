@@ -1,3 +1,5 @@
+import re
+import phonenumbers
 from rest_framework import serializers
 from users.models import CustomUser
 from django.core.validators import URLValidator
@@ -19,7 +21,19 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = CustomUser
-        fields = ['username', 'first_name', 'last_name', 'email', 'phone_number', 'password', 'confirm_password', 'role', 'date_of_birth', 'company_name', 'address_company', 'license_number', 'website']
+        fields = ['username', 'first_name', 'last_name', 'email', 'phone_number', 'password', 
+                  'confirm_password', 'role', 'date_of_birth', 'company_name', 'address_company', 
+                  'license_number', 'website']
+        
+    def validate_phone_number(self, value):
+        try:
+            # Парсим номер телефона
+            parsed_number = phonenumbers.parse(value, "RU")  # RU для России
+            if not phonenumbers.is_valid_number(parsed_number):
+                raise serializers.ValidationError("Некорректный номер телефона.")
+        except phonenumbers.NumberParseException:
+            raise serializers.ValidationError("Некорректный номер телефона.")
+        return value
 
     def validate(self, data):
         data = super().validate(data)
@@ -29,6 +43,17 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         
         if data['password'] != data['confirm_password']:
             raise ValidationError("Пароли не совпадают!")
+        
+        # Проверка сложности пароля
+        password = data['password']
+        if not re.search(r'[A-Z]', password):
+            raise serializers.ValidationError("Пароль должен содержать хотя бы одну заглавную букву.")
+        if not re.search(r'[a-z]', password):
+            raise serializers.ValidationError("Пароль должен содержать хотя бы одну строчную букву.")
+        if not re.search(r'[0-9]', password):
+            raise serializers.ValidationError("Пароль должен содержать хотя бы одну цифру.")
+        if not re.search(r'[!@#$%^&*(),.?":{}|<>]', password):
+            raise serializers.ValidationError("Пароль должен содержать хотя бы один специальный символ (!@#$%^&* и т.д.).")
 
         # Проверка уникальности email
         if CustomUser.objects.filter(email=data['email']).exists():
