@@ -1,0 +1,58 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:latest
+    restart: always
+    environment:
+      POSTGRES_DB: Mvpproperty
+      POSTGRES_USER: admin_mvp
+      POSTGRES_PASSWORD: FSeX4mlzhoiewbhbeioio12snnd
+    networks:
+      - ingress-routing
+
+  web:
+    build: ./backend
+    restart: always
+    command: bash -c "wait-for-it db:5432 -- python manage.py collectstatic --noinput && python manage.py makemigrations mobile users property && python manage.py migrate && gunicorn core.wsgi:application --bind 0.0.0.0:8000"
+    volumes:
+      - ./backend:/app
+      - static_volume:/app/static
+      - media_volume:/app/media
+    depends_on:
+      - db
+    networks:
+      - ingress-routing
+    ports:
+      - "8000:8000"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/admin/"]
+      interval: 30s
+      retries: 3
+      start_period: 30s
+      timeout: 10s
+
+  #nginx:
+  #  image: nginx:latest
+  #  container_name: nginx_aix
+  #  volumes:
+  #    - .:/app
+  #    - ./nginx.conf:/etc/nginx/nginx.conf
+  #    - static_volume:/app/static  # Подключаем статические файлы
+  #    - media_volume:/app/media 
+  #  ports:
+  #    - "80:80"
+  #    - "443:443"
+  #  depends_on:
+  #    - web
+  #  networks:
+  #    - ingress-routing
+
+networks:
+  ingress-routing:
+
+volumes:
+  postgres_data:
+  static_volume:
+  media_volume:
+

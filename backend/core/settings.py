@@ -43,7 +43,7 @@ INSTALLED_APPS = [
 
     'rest_framework',
     'rest_framework_simplejwt',
-
+    'mobile',
     'users',
     'property',
 ]
@@ -134,16 +134,20 @@ WSGI_APPLICATION = 'core.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('DB_NAME', 'Bayt'),
-        'USER': os.getenv('DB_USER', 'admin'),
-        'PASSWORD': os.getenv('DB_PASSWORD', 'FSeX4mlz'),
+        'NAME': os.getenv('DB_NAME', 'Mvpproperty'),
+        'USER': os.getenv('DB_USER', 'admin_mvp'),
+        'PASSWORD': os.getenv('DB_PASSWORD', 'FSeX4mlzhoiewbhbeioio12snnd'),
         'HOST': os.getenv('DB_HOST', 'db'),
         'PORT': os.getenv('DB_PORT', '5432'),
     }
 }
 
-MEDIA_URL = '/media/'  # URL для доступа к файлам
-MEDIA_ROOT = BASE_DIR / 'media'  # Локальная директория для хранения файлов
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
